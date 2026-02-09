@@ -3,21 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardMiniPlayer"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
+    android:layout_height="80dp"
     android:layout_marginHorizontal="12dp"
-    android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="#E6121212"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="12dp"
-    app:strokeColor="#33FFFFFF"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="#F2121212"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="20dp"
+    app:strokeColor="#3300FFFF"
+
     app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="4dp"
-        android:paddingBottom="2dp"
-        android:paddingHorizontal="8dp">
+        android:padding="8dp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivMiniImagen"
@@ -28,7 +27,7 @@
             android:padding="1dp"
             app:shapeAppearanceOverlay="@style/CircleImage"
             app:strokeWidth="1dp"
-            app:strokeColor="#5000FFFF"
+            app:strokeColor="#8000FFFF"
             app:layout_constraintBottom_toTopOf="@+id/miniSeekBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -48,36 +47,34 @@
                 android:id="@+id/tvMiniTitulo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Seleccione canción"
+                android:text="Cargando..."
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:ellipsize="marquee"
                 android:singleLine="true"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:focusable="true"
-                android:focusableInTouchMode="true"/>
+                android:marqueeRepeatLimit="marquee_forever" />
 
             <TextView
                 android:id="@+id/tvMiniArtista"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="-- / --"
+                android:text="--"
                 android:textColor="#B3FFFFFF"
                 android:textSize="12sp"
-                android:ellipsize="end"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:ellipsize="end" />
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/btnMiniPlay"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/boton_de_play"
             app:tint="#00FFFF"
             android:scaleType="fitCenter"
-            android:padding="8dp"
+            android:padding="10dp"
             app:layout_constraintBottom_toTopOf="@+id/miniSeekBar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -86,11 +83,12 @@
             android:id="@+id/miniSeekBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="4dp"
             android:progressTint="#00FFFF"
             android:thumbTint="#00FFFF"
             android:maxHeight="4dp"
             android:minHeight="4dp"
+            android:splitTrack="false"
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
             app:layout_constraintBottom_toBottomOf="parent"

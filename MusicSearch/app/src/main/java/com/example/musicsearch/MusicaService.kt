@@ -23,6 +23,7 @@ class MusicaService : Service() {
     // MÉTODO AUXILIAR PARA AVISAR A LAS PANTALLAS
     private fun notificarCambioUI() {
         val intent = Intent("EVENTO_ACTUALIZAR_MINIPLAYER")
+        intent.setPackage(packageName) // <--- ESTO ES LA CLAVE DE LA SEGURIDAD
         sendBroadcast(intent)
     }
 
@@ -104,12 +105,12 @@ class MusicaService : Service() {
             nombreCancionActual = nombreRaw
 
             // 1. Actualizamos todos los datos internos y la notificación
+            // Actualizamos notificación
             actualizarMetadatos(resId)
             actualizarEstadoReproduccion(PlaybackStateCompat.STATE_PLAYING)
             startForeground(NOTIFICATION_ID, crearNotificacion(true))
 
-            // 2. Avisamos a la UI para que se pinte
-            // (Así cuando MusicBaseActivity pregunte, los datos ya están listos)
+            // AVISAMOS A LA UI AL FINAL (Cuando ya todo está listo)
             notificarCambioUI()
 
         } catch (e: Exception) { e.printStackTrace() }
@@ -134,16 +135,13 @@ class MusicaService : Service() {
     private fun reanudarMusica() {
         if (mediaPlayer != null) {
             mediaPlayer?.start()
-
-            // --- NUEVO: AVISAR AL MINIPLAYER ---
             notificarCambioUI()
-
             actualizarEstadoReproduccion(PlaybackStateCompat.STATE_PLAYING)
             startForeground(NOTIFICATION_ID, crearNotificacion(true))
         }
     }
 
-    // --- MÉTODOS DE MEDIA SESSION (LA MAGIA DE SPOTIFY) ---
+    // --- MÉTODOS DE MEDIA SESSION ---
 
     private fun actualizarMetadatos(resId: Int) {
         // Obtenemos datos de la DB para que salgan bonitos en la notificación
@@ -247,18 +245,11 @@ class MusicaService : Service() {
     fun getNombreCancion(): String? { return nombreCancionActual }
 
     // --- NUEVO: MÉTODOS PARA EL SLIDER (SEEKBAR) ---
-    fun getPosicionActual(): Int {
-        return mediaPlayer?.currentPosition ?: 0
-    }
-
-    fun getDuracionTotal(): Int {
-        return mediaPlayer?.duration ?: 0
-    }
+    fun getPosicionActual(): Int = mediaPlayer?.currentPosition ?: 0
+    fun getDuracionTotal(): Int = mediaPlayer?.duration ?: 0
 
     fun seekTo(posicion: Int) {
         mediaPlayer?.seekTo(posicion)
-        // Actualizamos también el estado de la sesión para la notificación
-        actualizarEstadoReproduccion(if (isPlaying()) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED)
     }
 
     override fun onDestroy() {
