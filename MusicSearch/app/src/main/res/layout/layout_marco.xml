@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="false"
+    android:focusable="false">
+
+    <!-- CABECERA ROJA (130dp) - Pegada a los lados (marginHorizontal=0) -->
+    <View
+        android:id="@+id/viewHeaderComun"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="0dp"
+        android:background="@drawable/bg_cabecera_verde"
+        android:elevation="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- TÍTULO -->
+    <TextView
+        android:id="@+id/tvTituloHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Título"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        android:elevation="5dp"
+        android:shadowColor="#00FFCC"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="25"
+        app:layout_constraintStart_toStartOf="@+id/viewHeaderComun"
+        app:layout_constraintEnd_toEndOf="@+id/viewHeaderComun"
+        app:layout_constraintTop_toTopOf="@+id/viewHeaderComun"
+        app:layout_constraintBottom_toBottomOf="@+id/viewHeaderComun"/>
+
+    <!-- PIE BLANCO (130dp) - Pegado a los lados -->
+    <View
+        android:id="@+id/viewFooterComun"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginHorizontal="0dp"
+        android:background="@drawable/bg_pie_blanco"
+        android:elevation="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

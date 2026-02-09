@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="fondo">#56B8A3</color>
+    <color name="azul_oscuro_texto">#05445E</color>
+    <color name="azul_cielo_claro">#D4F1F4</color>
+
+    <color name="gris_secundario">#636E72</color>
+    <color name="gris_barra">#DFE6E9</color>
+
+    <color name="tipo_acero">#B7B7CE</color>
+    <color name="tipo_agua">#6390F0</color>
+    <color name="tipo_bicho">#A6B91A</color>
+    <color name="tipo_dragon">#6F35FC</color>
+    <color name="tipo_electrico">#F7D02C</color>
+    <color name="tipo_fantasma">#735797</color>
+    <color name="tipo_fuego">#EE8130</color>
+    <color name="tipo_hada">#D685AD</color>
+    <color name="tipo_hielo">#96D9D6</color>
+    <color name="tipo_lucha">#C22E28</color>
+    <color name="tipo_normal">#A8A77A</color>
+    <color name="tipo_planta">#7AC74C</color>
+    <color name="tipo_psiquico">#F95587</color>
+    <color name="tipo_roca">#B6A136</color>
+    <color name="tipo_siniestro">#705746</color>
+    <color name="tipo_tierra">#E2BF65</color>
+    <color name="tipo_veneno">#A33EA1</color>
+    <color name="tipo_volador">#A98FF3</color>
+    <color name="tipo_desconocido">#68A090</color>
+</resources>

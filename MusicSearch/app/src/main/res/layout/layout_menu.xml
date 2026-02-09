@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/fabOpcion1"
+        style="@style/Widget.App.Button.Slice"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+
+        app:icon="@drawable/libros"
+        app:iconGravity="textStart"
+        android:padding="0dp"
+        app:iconPadding="0dp"
+        app:iconSize="40dp"
+
+        app:backgroundTint="#E65100"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Slice.Left"
+        android:visibility="invisible"
+        android:rotation="-20"
+        app:layout_constraintBottom_toBottomOf="@+id/btnMenuFlotante"
+        app:layout_constraintEnd_toEndOf="@+id/btnMenuFlotante"
+        app:layout_constraintStart_toStartOf="@+id/btnMenuFlotante"
+        app:layout_constraintTop_toTopOf="@+id/btnMenuFlotante" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/fabOpcion2"
+        style="@style/Widget.App.Button.Slice"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+
+        app:icon="@drawable/musica"
+        app:iconGravity="textStart"
+        android:padding="0dp"
+        app:iconPadding="0dp"
+        app:iconSize="30dp"
+
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Slice.Center"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/btnMenuFlotante"
+        app:layout_constraintEnd_toEndOf="@+id/btnMenuFlotante"
+        app:layout_constraintStart_toStartOf="@+id/btnMenuFlotante"
+        app:layout_constraintTop_toTopOf="@+id/btnMenuFlotante" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/fabOpcion3"
+        style="@style/Widget.App.Button.Slice"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+
+        app:icon="@drawable/ic_dash_foreground"
+        app:iconGravity="textStart"
+        android:padding="0dp"
+        app:iconPadding="0dp"
+        app:iconSize="60dp"
+
+        app:backgroundTint="#FFB74D"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Slice.Right"
+        android:visibility="invisible"
+        android:rotation="20"
+        app:layout_constraintBottom_toBottomOf="@+id/btnMenuFlotante"
+        app:layout_constraintEnd_toEndOf="@+id/btnMenuFlotante"
+        app:layout_constraintStart_toStartOf="@+id/btnMenuFlotante"
+        app:layout_constraintTop_toTopOf="@+id/btnMenuFlotante" />
+
+    <FrameLayout
+        android:id="@+id/btnMenuFlotante"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="37dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:elevation="50dp"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView android:layout_width="105dp" android:layout_height="105dp" android:layout_gravity="center"
+            android:src="@drawable/logoapp" android:elevation="6dp" />
+    </FrameLayout>
+
+</merge>
