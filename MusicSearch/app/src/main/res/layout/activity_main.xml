@@ -10,6 +10,7 @@
     android:background="@drawable/bg_gradiente_fondo"
     tools:context=".MainActivity">
 
+    <!-- Guias para colocar el layout_marco -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guiaTop"
         android:layout_width="wrap_content"
@@ -24,6 +25,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_end="142dp" />
 
+    <!-- Buscador -->
     <EditText
         android:id="@+id/etBuscador"
         android:layout_width="0dp"
@@ -45,6 +47,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Lista de canciones -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerPokemon"
         android:layout_width="0dp"
@@ -58,6 +61,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etBuscador"/>
 
+    <!-- Marco decorativo de la aplicación -->
     <include
         android:id="@+id/layoutMarco"
         layout="@layout/layout_marco"
@@ -68,12 +72,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Toolbar en forma de abanico -->
     <include
         layout="@layout/layout_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
 
+    <!-- Transición -->
     <include
         android:id="@+id/layoutTransicion"
         layout="@layout/layout_transition"
@@ -81,6 +87,7 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
+    <!-- Mini Reproductor -->
     <include
         android:id="@+id/layoutMiniPlayer"
         layout="@layout/layout_mini_player"

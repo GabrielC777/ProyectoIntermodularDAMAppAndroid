@@ -17,7 +17,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlin.math.abs
 
 class DetalleActivity : MusicBaseActivity() {
-
     private var cancionActual: Cancion? = null
     private var esReproduciendo = false
 
@@ -28,11 +27,15 @@ class DetalleActivity : MusicBaseActivity() {
     // Detector de gestos
     private lateinit var gestureDetector: GestureDetectorCompat
 
+    // Referencias a los botones para moverlos con el swipe
+    private lateinit var fabPlay: FloatingActionButton
+    private lateinit var fabCola: FloatingActionButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detalle)
 
-        // CONFIGURAR BOTÓN ATRÁS (YA NO DEBERÍA FALLAR)
+        // CONFIGURAR BOTÓN ATRÁS
         val btnAtras = findViewById<View>(R.id.btnVolver)
         btnAtras.setOnClickListener {
             finish()
@@ -48,12 +51,12 @@ class DetalleActivity : MusicBaseActivity() {
             }
         }
 
-        // CONFIGURAR BOTÓN PLAY
-        val fabPlay = findViewById<FloatingActionButton>(R.id.fabPlayDetalle)
+        // CONFIGURAR BOTÓN PLAY (Inicializamos la variable global)
+        fabPlay = findViewById(R.id.fabPlayDetalle)
         fabPlay.setOnClickListener { toggleReproduccion() }
 
-        // CONFIGURAR BOTÓN AÑADIR A COLA
-        val fabCola = findViewById<FloatingActionButton>(R.id.fabColaDetalle)
+        // CONFIGURAR BOTÓN AÑADIR A COLA (Inicializamos la variable global)
+        fabCola = findViewById(R.id.fabColaDetalle)
         fabCola.setOnClickListener {
             if (musicaService != null && cancionActual != null) {
                 val resID = resources.getIdentifier(cancionActual!!.recursoRaw, "raw", packageName)
@@ -77,19 +80,44 @@ class DetalleActivity : MusicBaseActivity() {
         val rootLayout = findViewById<View>(R.id.rootLayoutDetalle)
         rootLayout.setOnTouchListener { v, event ->
             gestureDetector.onTouchEvent(event)
-            // IMPORTANTE: Devolvemos true solo si el gesto se consumió, si no false.
-            // Pero aquí devolvemos true para que el rootLayout siga recibiendo eventos de movimiento
-            // sin bloquear los clicks de los hijos (que están encima).
+            // IMPORTANTE: Devolvemos true para que el rootLayout siga recibiendo eventos
             true
         }
 
         iniciarGiroTecnologicoPermanente()
     }
 
-    // --- DETECTOR DE GESTOS ---
-    // NO SOBREESCRIBIR dispatchTouchEvent SI NO ES NECESARIO, A VECES CAUSA CONFLICTOS CON CLICKS
-    // Si usas el OnTouchListener en el rootLayout suele ser suficiente.
+    // --- MÉTODOS DE SINCRONIZACIÓN CON EL MINIPLAYER (NUEVO) ---
+    // Estos métodos vienen de MusicBaseActivity y permiten que los botones
+    // sigan el movimiento del MiniPlayer cuando lo deslizas.
 
+    override fun moverElementosHijos(translationY: Float) {
+        // Movemos los botones la misma distancia que el player en tiempo real
+        if (::fabPlay.isInitialized) fabPlay.translationY = translationY
+        if (::fabCola.isInitialized) fabCola.translationY = translationY
+    }
+
+    override fun animarElementosHijos(destinoY: Float) {
+        // Animamos los botones al soltar el player (efecto rebote)
+        if (::fabPlay.isInitialized) {
+            fabPlay.animate()
+                .translationY(destinoY)
+                .setDuration(300)
+                .setInterpolator(OvershootInterpolator(0.8f))
+                .start()
+        }
+        if (::fabCola.isInitialized) {
+            fabCola.animate()
+                .translationY(destinoY)
+                .setDuration(300)
+                .setInterpolator(OvershootInterpolator(0.8f))
+                .start()
+        }
+    }
+    // -------------------------------------------------------------
+
+
+    // --- DETECTOR DE GESTOS ---
     private inner class SwipeListener : GestureDetector.SimpleOnGestureListener() {
         private val SWIPE_THRESHOLD = 100
         private val SWIPE_VELOCITY_THRESHOLD = 100
@@ -124,8 +152,8 @@ class DetalleActivity : MusicBaseActivity() {
             val nombreRawActual = cancionActual!!.recursoRaw
             val nombreSonando = musicaService!!.getNombreCancion()
             val estaSonando = musicaService!!.isPlaying()
-            val fabPlay = findViewById<FloatingActionButton>(R.id.fabPlayDetalle)
 
+            // Usamos la variable de clase ya inicializada
             if (nombreRawActual == nombreSonando && estaSonando) {
                 esReproduciendo = true
                 fabPlay.setImageResource(android.R.drawable.ic_media_pause)
@@ -157,6 +185,7 @@ class DetalleActivity : MusicBaseActivity() {
         val ivImagen = findViewById<ImageView>(R.id.ivDetalleImagen)
         val resourceId = resources.getIdentifier(cancion.imagenUri, "drawable", packageName)
         if (resourceId != 0) ivImagen.setImageResource(resourceId)
+        else ivImagen.setImageResource(R.drawable.ic_launcher_foreground) // Protección por si acaso
 
         findViewById<TextView>(R.id.tvTipo1).text = "${cancion.visitas} PLAYS"
         findViewById<TextView>(R.id.tvTipo2).text = "${cancion.meGusta} LIKES"
@@ -164,7 +193,6 @@ class DetalleActivity : MusicBaseActivity() {
 
     private fun toggleReproduccion() {
         esReproduciendo = !esReproduciendo
-        val fabPlay = findViewById<FloatingActionButton>(R.id.fabPlayDetalle)
 
         if (esReproduciendo) {
             fabPlay.setImageResource(android.R.drawable.ic_media_pause)
@@ -222,6 +250,7 @@ class DetalleActivity : MusicBaseActivity() {
             animadorGiroVinilo?.pause()
         }
     }
+
     // Sobreescribimos el método que se llama cuando el servicio avisa de cambios
     override fun actualizarMiniPlayer() {
         // 1. Primero dejamos que la clase padre (MusicBaseActivity) actualice el MiniPlayer de abajo
@@ -231,10 +260,8 @@ class DetalleActivity : MusicBaseActivity() {
         if (musicaService != null && cancionActual != null) {
             val nombreSonando = musicaService!!.getNombreCancion()
             val estaSonando = musicaService!!.isPlaying()
-            val fabPlay = findViewById<FloatingActionButton>(R.id.fabPlayDetalle)
 
-            // Comprobamos si la canción que suena es la que estamos viendo
-            // cancionActual se carga en el onCreate, así que usamos esa referencia
+            // Usamos la variable de clase (que ya está inicializada en onCreate)
             val esLaMisma = (nombreSonando == cancionActual!!.recursoRaw)
 
             if (esLaMisma) {
@@ -249,8 +276,7 @@ class DetalleActivity : MusicBaseActivity() {
                     animarDisco(false) // Para vinilo
                 }
             } else {
-                // Si NO es la misma (ej: saltó a la siguiente en la cola),
-                // en esta pantalla mostramos que NO está sonando esta canción específica.
+                // Si NO es la misma, paramos todo
                 esReproduciendo = false
                 fabPlay.setImageResource(R.drawable.boton_de_play)
                 animarDisco(false) // Para vinilo
