@@ -38,7 +38,7 @@
         android:textColorHint="#8000FFFF"
         android:inputType="text"
         android:maxLines="1"
-        android:elevation="20dp"
+        android:elevation="10dp"
         android:drawableEnd="@android:drawable/ic_menu_search"
         android:drawableTint="#00FFFF"
         app:layout_constraintTop_toTopOf="@+id/guiaTop"

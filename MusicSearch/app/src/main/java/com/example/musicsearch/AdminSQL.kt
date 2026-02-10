@@ -4,7 +4,6 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-// CAMBIO IMPORTANTE: Versión 3 para añadir nuevos campos
 class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", null, 3) {
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -26,46 +25,35 @@ class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", n
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Borramos y creamos de nuevo para aplicar cambios limpios
         db.execSQL("DROP TABLE IF EXISTS canciones")
         onCreate(db)
     }
 
     private fun insertarDatosIniciales(db: SQLiteDatabase) {
-        // Formato: titulo, artista, raw, imagen, genero, año, duracion
-
-        // 1. ROBE
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Nada que perder', 'Robe', 'robe_nada_que_perder', 'img_nada_que_perder', 'Rock Progresivo', 2023, '6:15')")
-
-        // 2. WALLS
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Flores mustias', 'Walls', 'walls_flores_mustias', 'img_flores_mustias', 'Pop Rock', 2022, '3:05')")
-
-        // 3. STELLAR
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Ashes', 'Stellar', 'stellar_ashes', 'img_ashes', 'Pop Alternativo', 2020, '2:45')")
-
-        // 4. IMAGINE DRAGONS
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Believer', 'Imagine Dragons', 'id_believer', 'img_believer', 'Pop Rock', 2017, '3:24')")
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Bones', 'Imagine Dragons', 'id_bones', 'img_bones', 'Pop Rock', 2022, '2:45')")
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Demons', 'Imagine Dragons', 'id_demons', 'img_demons', 'Indie Rock', 2012, '2:57')")
-
-        // 5. ESTOPA
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Como Camarón', 'Estopa', 'estopa_como_camaron', 'img_como_camaron', 'Rumba Catalana', 1999, '3:22')")
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Por la raja de tu falda', 'Estopa', 'estopa_raja_falda', 'img_raja_falda', 'Rumba Rock', 1999, '3:25')")
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Vino Tinto', 'Estopa', 'estopa_vino_tinto', 'img_vino_tinto', 'Rumba', 2001, '3:18')")
-
-        // 6. THE LIVING TOMBSTONE
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('My Ordinary Life', 'The Living Tombstone', 'tlt_my_ordinary_life', 'img_my_ordinary_life', 'Electrónica', 2017, '3:52')")
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Discord', 'The Living Tombstone', 'tlt_discord', 'img_discord', 'Eurobeat', 2012, '3:20')")
-
-        // 7. ENRIQUE IGLESIAS
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Bailando', 'Enrique Iglesias', 'ei_bailando', 'img_bailando', 'Pop Latino', 2014, '4:03')")
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Hero', 'Enrique Iglesias', 'ei_hero', 'img_hero', 'Pop Balada', 2001, '4:24')")
-
-        // 8. FITO
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Soldadito Marinero', 'Fito & Fitipaldis', 'fito_soldadito', 'img_soldadito', 'Rock Español', 2003, '3:58')")
-
-        // 9. ALAN WALKER
-        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion) VALUES ('Faded', 'Alan Walker', 'aw_faded', 'img_faded', 'Electro House', 2015, '3:32')")
+        // Robe
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Nada que perder', 'Robe', 'robe_nada_que_perder', 'img_nada_que_perder', 'Rock Progresivo', 2023, '6:15', 4500)")
+        // Walls
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Flores mustias', 'Walls', 'walls_flores_mustias', 'img_flores_mustias', 'Pop Rock', 2022, '3:05', 3200)")
+        // Stellar
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Ashes', 'Stellar', 'stellar_ashes', 'img_ashes', 'Pop Alternativo', 2020, '2:45', 4100)")
+        // Imagine Dragons
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Believer', 'Imagine Dragons', 'id_believer', 'img_believer', 'Pop Rock', 2017, '3:24', 15400)")
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Bones', 'Imagine Dragons', 'id_bones', 'img_bones', 'Pop Rock', 2022, '2:45', 12500)")
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Demons', 'Imagine Dragons', 'id_demons', 'img_demons', 'Indie Rock', 2012, '2:57', 18000)")
+        // Estopa
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Como Camarón', 'Estopa', 'estopa_como_camaron', 'img_como_camaron', 'Rumba Catalana', 1999, '3:22', 8900)")
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Por la raja de tu falda', 'Estopa', 'estopa_raja_falda', 'img_raja_falda', 'Rumba Rock', 1999, '3:25', 9500)")
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Vino Tinto', 'Estopa', 'estopa_vino_tinto', 'img_vino_tinto', 'Rumba', 2001, '3:18', 8200)")
+        // The Living Tombstone
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('My Ordinary Life', 'The Living Tombstone', 'tlt_my_ordinary_life', 'img_my_ordinary_life', 'Electrónica', 2017, '3:52', 6700)")
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Discord', 'The Living Tombstone', 'tlt_discord', 'img_discord', 'Eurobeat', 2012, '3:20', 5600)")
+        // Enrique Iglesias
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Bailando', 'Enrique Iglesias', 'ei_bailando', 'img_bailando', 'Pop Latino', 2014, '4:03', 31000)")
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Hero', 'Enrique Iglesias', 'ei_hero', 'img_hero', 'Pop Balada', 2001, '4:24', 7200)")
+        // Fito
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Soldadito Marinero', 'Fito & Fitipaldis', 'fito_soldadito', 'img_soldadito', 'Rock Español', 2003, '3:58', 11000)")
+        // Alan Walker
+        db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Faded', 'Alan Walker', 'aw_faded', 'img_faded', 'Electro House', 2015, '3:32', 23000)")
     }
 
     fun sumarVisita(idCancion: Int) {
@@ -74,8 +62,8 @@ class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", n
         db.close()
     }
 
-    // Método genérico para leer datos y evitar repetir código
     private fun cursorToCancion(cursor: android.database.Cursor): Cancion {
+        // Aseguramos el orden correcto que coincide con data class Cancion
         val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
         val titulo = cursor.getString(cursor.getColumnIndexOrThrow("titulo"))
         val artista = cursor.getString(cursor.getColumnIndexOrThrow("artista"))
@@ -83,8 +71,6 @@ class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", n
         val visitas = cursor.getInt(cursor.getColumnIndexOrThrow("visitas"))
         val likes = cursor.getInt(cursor.getColumnIndexOrThrow("megusta"))
         val img = cursor.getString(cursor.getColumnIndexOrThrow("imagen_uri"))
-
-        // Nuevos campos (usamos getColumnIndex con fallback por si acaso, aunque no debería fallar en v3)
         val genero = cursor.getString(cursor.getColumnIndexOrThrow("genero"))
         val anio = cursor.getInt(cursor.getColumnIndexOrThrow("anio_lanzamiento"))
         val duracion = cursor.getString(cursor.getColumnIndexOrThrow("duracion"))

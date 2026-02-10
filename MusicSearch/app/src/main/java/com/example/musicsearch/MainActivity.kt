@@ -21,35 +21,31 @@ class MainActivity : MusicBaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // UI Base (Pokeball, etc.)
         setupPokeballUi("MUSIC PLAYER")
 
         etBuscador = findViewById(R.id.etBuscador)
-        recyclerView = findViewById(R.id.recyclerPokemon) // Ojo con este ID, asegúrate que es el de tu xml
+        recyclerView = findViewById(R.id.recyclerPokemon)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         db = AdminSQL(this)
-
-        // Cargar datos
         actualizarDatosDB()
 
-        // Configurar Adapter con la lógica inteligente
-        adapter = CancionAdapter(listaFiltrada) { cancionSeleccionada ->
-            manejarClickCancion(cancionSeleccionada)
+        // Configuramos el Adapter
+        adapter = CancionAdapter(listaFiltrada) { cancion ->
+            manejarClickCancion(cancion)
         }
         recyclerView.adapter = adapter
 
         setupBuscador()
     }
 
-    // --- SINCRONIZACIÓN CON EL SERVICIO ---
-
-    // 1. Al conectar (al abrir la app), actualizamos los iconos
+    // AL CONECTAR CON EL SERVICIO: Sincronizar UI
     override fun onMusicaServiceConnected() {
         super.onMusicaServiceConnected()
         actualizarEstadoAdapter()
     }
 
-    // 2. Método para refrescar los iconos según lo que diga el servicio
     private fun actualizarEstadoAdapter() {
         if (musicaService != null) {
             val nombre = musicaService!!.getNombreCancion()
@@ -58,7 +54,6 @@ class MainActivity : MusicBaseActivity() {
         }
     }
 
-    // 3. Lógica del Click (Inteligente)
     private fun manejarClickCancion(cancion: Cancion) {
         if (musicaService == null) return
 
@@ -66,40 +61,25 @@ class MainActivity : MusicBaseActivity() {
         val estaSonando = musicaService!!.isPlaying()
 
         if (cancion.recursoRaw == nombreSonando) {
-            // -- CLICK EN LA MISMA CANCIÓN --
-            if (estaSonando) {
-                // Está sonando -> PAUSAR
-                val intentMusic = Intent(this, MusicaService::class.java)
-                intentMusic.action = "PAUSE"
-                startService(intentMusic)
-                // Actualizamos visualmente manual para que sea rápido
-                adapter.actualizarEstadoMusica(nombreSonando, false)
-            } else {
-                // Está en pausa -> REANUDAR
-                val intentMusic = Intent(this, MusicaService::class.java)
-                intentMusic.action = "RESUME"
-                startService(intentMusic)
-                adapter.actualizarEstadoMusica(nombreSonando, true)
-            }
+            // Misma canción: Play/Pause
+            val action = if (estaSonando) "PAUSE" else "RESUME"
+            startService(Intent(this, MusicaService::class.java).apply { this.action = action })
+            // Actualización optimista inmediata
+            adapter.actualizarEstadoMusica(nombreSonando, !estaSonando)
         } else {
-            // -- CLICK EN CANCIÓN NUEVA --
+            // Nueva canción
             val resID = resources.getIdentifier(cancion.recursoRaw, "raw", packageName)
             if (resID != 0) {
-                val intentMusic = Intent(this, MusicaService::class.java)
-                intentMusic.action = "CAMBIAR_CANCION"
-                intentMusic.putExtra("ID_CANCION", resID) // Usamos ID, no String
-                startService(intentMusic)
+                val intent = Intent(this, MusicaService::class.java)
+                intent.action = "CAMBIAR_CANCION"
+                intent.putExtra("ID_CANCION", resID)
+                startService(intent)
 
-                // Sumar visita
                 db.sumarVisita(cancion.id)
-
-                // Actualizar visualmente (asumimos que empieza a sonar)
                 adapter.actualizarEstadoMusica(cancion.recursoRaw, true)
             }
         }
     }
-
-    // --- RESTO DE MÉTODOS ---
 
     private fun actualizarDatosDB() {
         listaCompleta = db.obtenerTodasLasCanciones()
@@ -128,11 +108,8 @@ class MainActivity : MusicBaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Recargar datos por si cambiaron visitas
         actualizarDatosDB()
         adapter.actualizarLista(listaFiltrada)
-
-        // Y muy importante: Sincronizar estado del reproductor al volver
         actualizarEstadoAdapter()
     }
 }

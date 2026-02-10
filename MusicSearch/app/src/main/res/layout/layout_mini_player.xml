@@ -1,99 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cardMiniPlayer"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contenedorZanahoria"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:layout_marginHorizontal="12dp"
-    android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="#F2121212"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="20dp"
-    app:strokeColor="#3300FFFF"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
-    app:strokeWidth="1dp">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cabeceraPlayer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp">
+        android:layout_height="80dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginTop="16dp"
+        app:cardBackgroundColor="#F2121212"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="20dp"
+        app:strokeColor="#3300FFFF"
+        app:strokeWidth="1dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/ivMiniImagen"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_foreground"
-            android:padding="1dp"
-            app:shapeAppearanceOverlay="@style/CircleImage"
-            app:strokeWidth="1dp"
-            app:strokeColor="#8000FFFF"
-            app:layout_constraintBottom_toTopOf="@+id/miniSeekBar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/miniSeekBar"
-            app:layout_constraintEnd_toStartOf="@+id/btnMiniPlay"
-            app:layout_constraintStart_toEndOf="@+id/ivMiniImagen"
-            app:layout_constraintTop_toTopOf="parent">
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivMiniImagen"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_launcher_foreground"
+                android:padding="1dp"
+                app:shapeAppearanceOverlay="@style/CircleImage"
+                app:strokeWidth="1dp"
+                app:strokeColor="#8000FFFF"
+                app:layout_constraintBottom_toTopOf="@+id/miniSeekBar"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvMiniTitulo"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Cargando..."
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:ellipsize="marquee"
-                android:singleLine="true"
-                android:marqueeRepeatLimit="marquee_forever" />
+                android:orientation="vertical"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/miniSeekBar"
+                app:layout_constraintEnd_toStartOf="@+id/layoutBotones"
+                app:layout_constraintStart_toEndOf="@+id/ivMiniImagen"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tvMiniArtista"
-                android:layout_width="match_parent"
+                <TextView android:id="@+id/tvMiniTitulo" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Título" android:textColor="#FFFFFF" android:textSize="14sp" android:textStyle="bold" android:singleLine="true" android:ellipsize="marquee" android:marqueeRepeatLimit="marquee_forever" />
+                <TextView android:id="@+id/tvMiniArtista" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Artista" android:textColor="#B3FFFFFF" android:textSize="12sp" android:singleLine="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutBotones"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="--"
-                android:textColor="#B3FFFFFF"
-                android:textSize="12sp"
-                android:maxLines="1"
-                android:ellipsize="end" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/miniSeekBar">
 
-        <ImageButton
-            android:id="@+id/btnMiniPlay"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/boton_de_play"
-            app:tint="#00FFFF"
-            android:scaleType="fitCenter"
-            android:padding="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/miniSeekBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                <ImageButton
+                    android:id="@+id/btnMiniPrev"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_media_previous"
+                    app:tint="#FFFFFF"
+                    android:scaleType="fitCenter"
+                    android:padding="4dp" />
 
-        <SeekBar
-            android:id="@+id/miniSeekBar"
-            android:layout_width="0dp"
+                <ImageButton
+                    android:id="@+id/btnMiniPlay"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/boton_de_play"
+                    app:tint="#00FFFF"
+                    android:scaleType="fitCenter"
+                    android:padding="4dp"
+                    android:layout_marginHorizontal="4dp"/>
+
+                <ImageButton
+                    android:id="@+id/btnMiniNext"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_media_next"
+                    app:tint="#FFFFFF"
+                    android:scaleType="fitCenter"
+                    android:padding="4dp" />
+
+                <ImageButton
+                    android:id="@+id/btnVerCola"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_upload"
+                    android:rotation="180"
+                    app:tint="#80FFFFFF"
+                    android:scaleType="fitCenter"
+                    android:padding="6dp"
+                    android:layout_marginStart="4dp"/>
+            </LinearLayout>
+
+            <SeekBar android:id="@+id/miniSeekBar" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:progressTint="#00FFFF" android:thumbTint="#00FFFF" android:maxHeight="4dp" android:minHeight="4dp" android:splitTrack="false" android:paddingStart="0dp" android:paddingEnd="0dp" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:id="@+id/cuerpoCola"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:orientation="vertical"
+        android:background="#D9000000"
+        android:layout_marginHorizontal="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/cabeceraPlayer">
+
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:progressTint="#00FFFF"
-            android:thumbTint="#00FFFF"
-            android:maxHeight="4dp"
-            android:minHeight="4dp"
-            android:splitTrack="false"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            android:text="SIGUIENTE EN COLA"
+            android:textColor="#00FFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="#4D3300FF"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerCola"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            tools:listitem="@android:layout/simple_list_item_1"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
