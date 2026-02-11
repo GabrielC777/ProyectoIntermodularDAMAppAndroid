@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewTreeObserver
@@ -28,6 +29,7 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -65,7 +67,7 @@ open class MusicBaseActivity : AppCompatActivity() {
     // UI Transiciones, menú y animaciones: Elementos para la navegación y efectos visuales.
     private var animadorVinilo: ObjectAnimator? = null // Animación de rotación para la imagen del álbum.
     private lateinit var layoutTransicion: ConstraintLayout // Contenedor para la animación de transición entre pantallas.
-    private lateinit var cortinaRoja: View // Parte de la animación de transición.
+    private lateinit var cortinaVerde: View // Parte de la animación de transición.
     private lateinit var cortinaBlanca: View // Parte de la animación de transición.
     protected lateinit var btnFlotanteCentral: FrameLayout // Botón principal del menú flotante.
     protected lateinit var fabOpcion1: MaterialButton // Opción 1 del menú.
@@ -156,7 +158,7 @@ open class MusicBaseActivity : AppCompatActivity() {
         isColaVisible = false
 
         // -----------------------------------------------------------
-        // 3. LÓGICA DE ARRASTRE (SWIPE) CONTROLADA
+        // 3. LÓGICA DE ARRASTRE (SWIPE)
         // -----------------------------------------------------------
         // Listener para manejar el gesto de deslizar el MiniPlayer.
         cabecera.setOnTouchListener(object : View.OnTouchListener {
@@ -211,13 +213,13 @@ open class MusicBaseActivity : AppCompatActivity() {
                         // Anima a la posición final (abierto o cerrado).
                         if (abrir) {
                             // ABRIR
-                            animarTodo(0f, -alturaDesplazamiento)
+                            animarPlayerYBtnFlotante(0f, -alturaDesplazamiento)
                             isColaVisible = true
                             actualizarListaCola()
                             btnVerCola?.animate()?.rotation(0f)?.start()
                         } else {
                             // CERRAR
-                            animarTodo(alturaDesplazamiento, 0f)
+                            animarPlayerYBtnFlotante(alturaDesplazamiento, 0f)
                             isColaVisible = false
                             btnVerCola?.animate()?.rotation(180f)?.start()
                         }
@@ -258,10 +260,10 @@ open class MusicBaseActivity : AppCompatActivity() {
         //Abrir o cerrar la cola pulsando un botón
         btnVerCola?.setOnClickListener {
             if (isColaVisible) {
-                animarTodo(alturaDesplazamiento, 0f)
+                animarPlayerYBtnFlotante(alturaDesplazamiento, 0f)
                 btnVerCola.animate().rotation(180f).start()
             } else {
-                animarTodo(0f, -alturaDesplazamiento)
+                animarPlayerYBtnFlotante(0f, -alturaDesplazamiento)
                 btnVerCola.animate().rotation(0f).start()
                 actualizarListaCola()
             }
@@ -300,13 +302,14 @@ open class MusicBaseActivity : AppCompatActivity() {
 
     // --- HELPER 2: ANIMAR TODO ---
     // Anima el movimiento del reproductor y el menú flotante.
-    private fun animarTodo(destinoPlayer: Float, destinoMenu: Float) {
+    private fun animarPlayerYBtnFlotante(destinoPlayer: Float, destinoMenu: Float) {
+        //Animación para miniplayer
         miniPlayerView!!.animate()
-            .translationY(destinoPlayer)
-            .setDuration(300)
-            .setInterpolator(OvershootInterpolator(0.8f))
+            .translationY(destinoPlayer) //Donde va
+            .setDuration(300) //Cuanto tarda
+            .setInterpolator(OvershootInterpolator(0.8f)) //El estilo
             .start()
-
+        //Animación para botón flotante
         if (::btnFlotanteCentral.isInitialized) {
             btnFlotanteCentral.animate()
                 .translationY(destinoMenu)
@@ -317,11 +320,16 @@ open class MusicBaseActivity : AppCompatActivity() {
             val views = listOf(fabOpcion1, fabOpcion2, fabOpcion3)
             views.forEach {
                 if (it != null && ::fabOpcion1.isInitialized) {
-                    it.animate().translationY(destinoMenu).setDuration(300).setInterpolator(OvershootInterpolator(0.8f)).start()
+                    it.animate()
+                        .translationY(destinoMenu)
+                        .setDuration(300)
+                        .setInterpolator(OvershootInterpolator(0.8f))
+                        .start()
                 }
             }
         }
-        animarElementosHijos(destinoMenu) // Anima elementos específicos de la actividad hija.
+        // Anima elementos específicos de la actividad hija.
+        animarElementosHijos(destinoMenu)
     }
 
     // Métodos para ser sobrescritos por actividades hijas para mover/animar sus propios elementos.
@@ -333,12 +341,15 @@ open class MusicBaseActivity : AppCompatActivity() {
         // Por defecto no hace nada
     }
 
-    // Cierra el menú flotante sin animación compleja (útil al interactuar con otras partes).
+    // Cierra el menú flotante sin animación compleja
     private fun cerrarMenuAbanicoRapido() {
         if (!::btnFlotanteCentral.isInitialized) return
 
         isMenuAbierto = false
-        btnFlotanteCentral.animate().rotation(0f).setDuration(200).start()
+        btnFlotanteCentral.animate()
+            .rotation(0f)
+            .setDuration(200)
+            .start()
         val currentY = btnFlotanteCentral.translationY
 
         val views = listOf(fabOpcion1, fabOpcion2, fabOpcion3)
@@ -368,10 +379,14 @@ open class MusicBaseActivity : AppCompatActivity() {
 
         // Configura la animación de rotación del vinilo.
         if (animadorVinilo == null && ivImagen != null) {
-            animadorVinilo = ObjectAnimator.ofFloat(ivImagen, "rotation", 0f, 360f).apply {
-                duration = 4000
-                repeatCount = ObjectAnimator.INFINITE
-                interpolator = LinearInterpolator()
+            //.ofFloat : crear una animacion que controle número decimal
+            animadorVinilo = ObjectAnimator.ofFloat(ivImagen,
+                "rotation",
+                0f,
+                360f)
+                .apply {duration = 4000
+                        repeatCount = ObjectAnimator.INFINITE
+                        interpolator = LinearInterpolator()
             }
         }
 
@@ -384,17 +399,27 @@ open class MusicBaseActivity : AppCompatActivity() {
 
             // Configura el máximo del SeekBar.
             val duracion = musicaService!!.getDuracionTotal()
-            if (duracion > 0) miniSeekBar?.max = duracion
+            if (duracion > 0) {
+                miniSeekBar?.max = duracion
+            }
 
             // Recupera metadatos de la canción desde la base de datos.
             val db = AdminSQL(this)
-            val cancion = db.obtenerTodasLasCanciones().find { it.recursoRaw == nombreRaw }
+            val cancion = db.obtenerTodasLasCanciones().find {
+                it.recursoRaw == nombreRaw
 
+            }
+            //Asignamos los nuevos datos a MiniPlayer
             if (cancion != null) {
                 tvTitulo.text = cancion.titulo
                 tvTitulo.isSelected = true // Habilita el efecto marquesina.
                 tvArtista.text = cancion.artista
-                val resId = resources.getIdentifier(cancion.imagenUri, "drawable", packageName)
+                //Obtenemos la imagen
+                val resId = resources.getIdentifier(
+                    cancion.imagenUri,
+                    "drawable",
+                    packageName)
+
                 if (resId != 0) ivImagen.setImageResource(resId)
             }
 
@@ -409,8 +434,9 @@ open class MusicBaseActivity : AppCompatActivity() {
                 if (animadorVinilo?.isRunning == true) animadorVinilo?.pause()
             }
 
-            // Controla la visibilidad/habilitación de los botones Next y Prev.
+            // Controla  los botones Next y Prev.
             val hayCola = musicaService!!.getCola().isNotEmpty()
+            //Opacidad
             btnNext.alpha = if (hayCola) 1.0f else 0.3f
             btnNext.isEnabled = hayCola
 
@@ -431,12 +457,14 @@ open class MusicBaseActivity : AppCompatActivity() {
     private fun actualizarListaCola() {
         if (musicaService == null) return
         val colaIds = musicaService!!.getCola()
+        //Si esta la cola vacia la limpiamos
         if (colaIds.isEmpty()) {
             recyclerCola.adapter = null
             return
         }
         val db = AdminSQL(this)
         val todas = db.obtenerTodasLasCanciones()
+        //Filtramos por id y las buscamos
         val cancionesCola = colaIds.mapNotNull { id ->
             val nombreRaw = resources.getResourceEntryName(id)
             todas.find { it.recursoRaw == nombreRaw }
@@ -444,14 +472,17 @@ open class MusicBaseActivity : AppCompatActivity() {
         recyclerCola.adapter = ColaAdapter(cancionesCola)
     }
 
-    // Runnable para actualizar el progreso del SeekBar periódicamente.
+    // Runnable para actualizar el progreso del SeekBar cada segundo.
     private val runnableSlider = object : Runnable {
         override fun run() {
             if (musicaService != null && isServiceBound) {
+                //Si el telefono va lento y aun no inicio el miniplayer esto se ocupa de asegurar que se vea
                 if (musicaService!!.getNombreCancion() != null && miniPlayerView?.visibility != View.VISIBLE) {
                     actualizarMiniPlayer()
                 }
+                //Si una cancion esta reproduciendose y el usuario no esta tocado la barrar
                 if (musicaService!!.isPlaying() && !isUserSeeking) {
+                    //La actualizamos
                     val actual = musicaService!!.getPosicionActual()
                     val total = musicaService!!.getDuracionTotal()
                     if (total > 0) {
@@ -460,11 +491,12 @@ open class MusicBaseActivity : AppCompatActivity() {
                     }
                 }
             }
+            //Delay de un segundo
             handlerUI.postDelayed(this, 1000)
         }
     }
 
-    // Inicia el ciclo de actualización del SeekBar.
+    // Inicia el ciclo de actualización del SeekBar (borrar las anteriores para asegurar que funcione)
     private fun iniciarActualizacionSlider() {
         handlerUI.removeCallbacks(runnableSlider)
         handlerUI.post(runnableSlider)
@@ -476,8 +508,9 @@ open class MusicBaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Manejo personalizado del botón atrás.
+        // Manejo personalizado le deciamos que no use el codigo default si no el nuestro
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            //Ahora ejecutara este codigo
             override fun handleOnBackPressed() {
                 intentarSalir()
             }
@@ -485,14 +518,14 @@ open class MusicBaseActivity : AppCompatActivity() {
     }
 
     // Configura la interfaz del menú flotante y las transiciones iniciales.
-    protected fun setupPokeballUi(tituloPantalla: String) {
-        supportActionBar?.hide()
-        ocultarBarraDeEstado()
+    protected fun setupMarcoUi(tituloPantalla: String) {
+        supportActionBar?.hide() //Guarda el ActionBar
+        ocultarBarraDeEstado() //Barra o isla para tener la pantalla completa
 
         try {
             // Referencias a los elementos del layout de transición y menú.
             layoutTransicion = findViewById(R.id.layoutTransicion)
-            cortinaRoja = findViewById(R.id.cortinaRoja)
+            cortinaVerde = findViewById(R.id.cortinaRoja)
             cortinaBlanca = findViewById(R.id.cortinaBlanca)
             btnFlotanteCentral = findViewById(R.id.btnMenuFlotante)
             fabOpcion1 = findViewById(R.id.fabOpcion1)
@@ -505,35 +538,55 @@ open class MusicBaseActivity : AppCompatActivity() {
             layoutTransicion.elevation = 100f
             btnFlotanteCentral.elevation = 110f
 
+            //Preparemos el titulo para la animación
             if (tvTituloHeader != null) {
                 tvTituloHeader!!.text = tituloPantalla
                 tvTituloHeader!!.alpha = 0f
                 tvTituloHeader!!.translationX = 300f
             }
             ajustarLimitesTransicion()
+
             // Inicia la animación de apertura una vez que la vista esté lista.
             layoutTransicion.post { animarApertura() }
-        } catch (e: Exception) { }
+
+        } catch (e: Exception) {
+            Log.e("[DEBUG]", "Error en el setupMarcoUi$e")
+        }
     }
 
     // Ejecuta la animación de entrada (cortinas abriéndose).
     private fun animarApertura() {
         layoutTransicion.visibility = View.VISIBLE
+        //Espera a que se termine de dibujar la pantalla
         layoutTransicion.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
+                //Despues de la primera ejecucion desaparece
                 layoutTransicion.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                //Calculamos donde esta el centro del telefono desde donde estaba el botón
                 val distanciaBoton = getDistanciaCentroBoton()
+                //Calculamos lo que necesitamos para llegar a ese lugar
                 val magnitudApertura = abs(distanciaBoton)
-                cortinaRoja.translationY = 0f
+                //Colocamos las cortinas tapando la pantalla
+                cortinaVerde.translationY = 0f
                 cortinaBlanca.translationY = 0f
+                //Colocamos el boton en el centro
                 btnFlotanteCentral.translationY = distanciaBoton
-                btnFlotanteCentral.animate().translationY(0f).rotation(0f).setDuration(600).setInterpolator(OvershootInterpolator(1.0f)).start()
-                cortinaRoja.animate().translationY(-magnitudApertura).setDuration(600).setInterpolator(AccelerateDecelerateInterpolator()).start()
-                cortinaBlanca.animate().translationY(magnitudApertura).setDuration(600).setInterpolator(AccelerateDecelerateInterpolator()).setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        layoutTransicion.visibility = View.GONE
-                        animarEntradaTitulo()
-                    }
+
+                //Animación botón flotante
+                btnFlotanteCentral.animate()
+                    .translationY(0f).rotation(0f).setDuration(600).setInterpolator(OvershootInterpolator(1.0f)).start()
+                //Cortina verde sube
+                cortinaVerde.animate()
+                    .translationY(-magnitudApertura).setDuration(600).setInterpolator(AccelerateDecelerateInterpolator()).start()
+                //Cortina blanca baja
+                cortinaBlanca.animate()
+                    .translationY(magnitudApertura).setDuration(600).setInterpolator(AccelerateDecelerateInterpolator())
+                    .setListener(object : AnimatorListenerAdapter() {
+                        //Terminamos la animacion destruimos las cortinas y iniciamos animación titulo
+                        override fun onAnimationEnd(animation: Animator) {
+                            layoutTransicion.visibility = View.GONE
+                            animarEntradaTitulo()
+                        }
                 }).start()
             }
         })
@@ -541,41 +594,53 @@ open class MusicBaseActivity : AppCompatActivity() {
 
     // Calcula la distancia necesaria para animar el botón central desde el centro de la pantalla.
     private fun getDistanciaCentroBoton(): Float {
+        //Cogemos la pantalla
         val parentView = btnFlotanteCentral.parent as View
         val locationParent = IntArray(2)
+        //En que pixeles esta la pantalla
         parentView.getLocationOnScreen(locationParent)
+        //Calcula en centro sumando la posición inicial + la mitad de la altura
         val parentCenterY = locationParent[1] + (parentView.height / 2f)
+
+        //Ahora buscamos el boton
         val locationButton = IntArray(2)
         btnFlotanteCentral.getLocationOnScreen(locationButton)
         val buttonCenterY = locationButton[1] + (btnFlotanteCentral.height / 2f)
+        //Ajustamos le boton (visualmente no se veia centrado para el ojo humano)
         val ajusteManualDp = -15f
         val ajustePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ajusteManualDp, resources.displayMetrics)
+
+        //Destino Deseado (Centro Pantalla) - Posición Actual (Centro Botón) + ajuste
         return (parentCenterY - buttonCenterY) + ajustePx
     }
 
     // Configura los listeners de clic para el menú flotante y sus opciones.
     private fun setupLogicaMenu() {
         btnFlotanteCentral.setOnClickListener { animarMenuAbanico() }
-        fabOpcion1.setOnClickListener { if (this !is CatalogoActivity) navegarConAnimacion(CatalogoActivity::class.java) }
-        fabOpcion2.setOnClickListener { if (this !is MainActivity) navegarConAnimacion(MainActivity::class.java) }
-        fabOpcion3.setOnClickListener { if (this !is RankingActivity) navegarConAnimacion(RankingActivity::class.java) }
+        fabOpcion1.setOnClickListener { if (this !is CatalogoActivity) animarCierre(CatalogoActivity::class.java) }
+        fabOpcion2.setOnClickListener { if (this !is MainActivity) animarCierre(MainActivity::class.java) }
+        fabOpcion3.setOnClickListener { if (this !is RankingActivity) animarCierre(RankingActivity::class.java) }
     }
 
     // Anima la apertura y cierre del menú radial (abanico).
     private fun animarMenuAbanico() {
+        //Cuando de lejos se van a abrir
         val radio = 85f * resources.displayMetrics.density
+        //Donde están los botones ahora mismo
         val baseY = btnFlotanteCentral.translationY
 
         if (isMenuAbierto) {
             // Cierra el menú.
             btnFlotanteCentral.animate().rotation(0f).setDuration(300).start()
+
             cerrarFab(fabOpcion1)
             cerrarFab(fabOpcion2)
             cerrarFab(fabOpcion3)
         } else {
             // Abre el menú desplegando opciones.
-            val interpolador = OvershootInterpolator(1.2f)
+            val interpolador = OvershootInterpolator(1.2f)//Mini rebote
             btnFlotanteCentral.animate().rotation(45f).setInterpolator(interpolador).setDuration(300).start()
+
             abrirFab(fabOpcion1, -radio * 0.85f, baseY - radio * 0.5f, -30f, interpolador)
             abrirFab(fabOpcion2, 0f, baseY - radio * 0.9f, 0f, interpolador)
             abrirFab(fabOpcion3, radio * 0.85f, baseY - radio * 0.5f, 30f, interpolador)
@@ -588,56 +653,96 @@ open class MusicBaseActivity : AppCompatActivity() {
         fab.visibility = View.VISIBLE
         fab.alpha = 0f
         fab.scaleX = 0.5f; fab.scaleY = 0.5f
-        fab.animate().translationX(x).translationY(y).rotation(rotacion).alpha(1f).scaleX(1f).scaleY(1f).setDuration(350).setInterpolator(interpolator).start()
+        fab.animate()
+            .translationX(x).translationY(y)
+            .rotation(rotacion)
+            .alpha(1f)
+            .scaleX(1f).scaleY(1f)
+            .setDuration(350)
+            .setInterpolator(interpolator)
+            .start()
         fab.isClickable = true
     }
 
     // Helper para animar la desaparición de un botón de opción.
     private fun cerrarFab(fab: MaterialButton) {
         val baseY = btnFlotanteCentral.translationY
-        fab.animate().translationX(0f).translationY(baseY).rotation(0f).alpha(0f).scaleX(0.5f).scaleY(0.5f).setDuration(250).withEndAction { fab.visibility = View.INVISIBLE }.start()
+        fab.animate()
+            .translationX(0f).translationY(baseY)
+            .rotation(0f)
+            .alpha(0f)
+            .scaleX(0.5f).scaleY(0.5f)
+            .setDuration(250)
+            .withEndAction {
+                fab.visibility = View.INVISIBLE
+            }
+            .start()
         fab.isClickable = false
     }
 
-    // Maneja la navegación a otra actividad con una animación de transición personalizada.
-    protected fun navegarConAnimacion(claseDestino: Class<*>) {
+    // Maneja la navegación a otra actividad con una animación de transición .
+    protected fun animarCierre(claseDestino: Class<*>) {
+        //Cerramos el miniplayer si esta maximizado
         if (miniPlayerView != null) {
             val alturaOculta = 250f * resources.displayMetrics.density
-            animarTodo(alturaOculta, 0f)
+            animarPlayerYBtnFlotante(alturaOculta, 0f)
             isColaVisible = false
         }
 
         layoutTransicion.visibility = View.VISIBLE
+        //Aqui repetimos lo que hacia animaApertura pero al contrario
         btnFlotanteCentral.bringToFront()
         tvTituloHeader?.animate()?.alpha(0f)?.setDuration(200)?.start()
+        //Cerramos abanico
         if (isMenuAbierto) animarMenuAbanico()
 
         val distanciaBoton = getDistanciaCentroBoton()
         val magnitudApertura = abs(distanciaBoton)
-        cortinaRoja.translationY = -magnitudApertura
+        cortinaVerde.translationY = -magnitudApertura
         cortinaBlanca.translationY = magnitudApertura
 
         // Anima el cierre de cortinas.
-        btnFlotanteCentral.animate().translationY(distanciaBoton).rotation(360f).setDuration(450).setInterpolator(AccelerateDecelerateInterpolator()).start()
-        cortinaRoja.animate().translationY(0f).setDuration(450).setInterpolator(AccelerateDecelerateInterpolator()).start()
-        cortinaBlanca.animate().translationY(0f).setDuration(450).setInterpolator(AccelerateDecelerateInterpolator()).setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                // Efecto de "latido" antes de cambiar de actividad.
-                hacerPalpito {
-                    val intent = Intent(this@MusicBaseActivity, claseDestino)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    overridePendingTransition(0, 0)
-                    finish()
+        btnFlotanteCentral.animate()
+            .translationY(distanciaBoton)
+            .rotation(360f)
+            .setDuration(450)
+            .setInterpolator(AccelerateDecelerateInterpolator()).start()
+
+        cortinaVerde.animate()
+            .translationY(0f)
+            .setDuration(450)
+            .setInterpolator(AccelerateDecelerateInterpolator()).start()
+
+        cortinaBlanca.animate()
+            .translationY(0f)
+            .setDuration(450)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    // Efecto de "latido" antes de cambiar de actividad.
+                    hacerPalpito {
+                        val intent = Intent(this@MusicBaseActivity, claseDestino)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
+                        overridePendingTransition(0, 0)
+                        finish()
+                    }
                 }
-            }
         }).start()
     }
 
     // Animación de escala para el botón central.
     private fun hacerPalpito(onEnd: () -> Unit) {
-        btnFlotanteCentral.animate().scaleX(1.2f).scaleY(1.2f).setDuration(150).withEndAction {
-            btnFlotanteCentral.animate().scaleX(1f).scaleY(1f).setDuration(150).withEndAction { onEnd() }.start()
+        btnFlotanteCentral.animate()
+            .scaleX(1.2f).scaleY(1.2f)
+            .setDuration(150)
+            .withEndAction {
+                btnFlotanteCentral.animate()
+                    .scaleX(1f).scaleY(1f)
+                    .setDuration(150)
+                    .withEndAction {
+                        onEnd()
+                    }.start()
         }.start()
     }
 
@@ -648,8 +753,11 @@ open class MusicBaseActivity : AppCompatActivity() {
 
     // Ajusta los márgenes del layout de transición para respetar áreas seguras (system bars).
     private fun ajustarLimitesTransicion() {
+        //Margen de seguridad que asignamos previamente calculamos los pixeles reales
         val margenPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MARGEN_SEGURIDAD_DP, resources.displayMetrics).toInt()
+        //Lo aplicamos
         layoutTransicion.setPadding(0, margenPx, 0, margenPx)
+        //Cortamos todo lo que sobre salga
         layoutTransicion.clipToPadding = true
     }
 
@@ -660,23 +768,32 @@ open class MusicBaseActivity : AppCompatActivity() {
             val controller = WindowCompat.getInsetsController(window, window.decorView)
             controller.hide(WindowInsetsCompat.Type.systemBars())
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        } catch (e: Exception) { }
+        } catch (e: Exception)
+        {
+            Log.e("[DEBUG]", "Error en el ocultarBarraDeEstado$e")
+        }
     }
 
     // Maneja el comportamiento al presionar "Atrás".
     protected fun intentarSalir() {
-        if (this is MainActivity) moveTaskToBack(true) else finish()
+        //Pregunta soy la pantalla principal? DetalleActivity no lo es entonces vuelve atrás
+        if (this is MainActivity) {
+            //Equivale a pulsar el boton home
+            moveTaskToBack(true)
+        }
+        else finish() //destruimos la pestaña
     }
 
     // Lifecycle: Se ejecuta al iniciar la actividad. Registra el receiver y conecta el servicio.
     override fun onStart() {
         super.onStart()
         val filter = IntentFilter("EVENTO_ACTUALIZAR_MINIPLAYER")
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(musicReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            registerReceiver(musicReceiver, filter)
-        }
+        ContextCompat.registerReceiver(
+            this,
+            musicReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         Intent(this, MusicaService::class.java).also { intent ->
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
@@ -687,7 +804,11 @@ open class MusicBaseActivity : AppCompatActivity() {
     // Lifecycle: Se ejecuta al detener la actividad. Desregistra el receiver y desconecta el servicio.
     override fun onStop() {
         super.onStop()
-        try { unregisterReceiver(musicReceiver) } catch (e: Exception) {}
+        try { unregisterReceiver(musicReceiver) } catch (e: Exception)
+        {
+            Log.e("[DEBUG]", "Error en el onStop$e")
+        }
+
         if (isServiceBound) {
             unbindService(connection)
             isServiceBound = false

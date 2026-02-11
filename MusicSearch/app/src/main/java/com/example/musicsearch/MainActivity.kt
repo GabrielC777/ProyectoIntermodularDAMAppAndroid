@@ -1,9 +1,13 @@
 package com.example.musicsearch
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,7 +37,7 @@ class MainActivity : MusicBaseActivity() {
 
         // Método de la clase padre (MusicBaseActivity).
         // Configura la "Pokeball" el titulo del marco, oculta la ActionBar y prepara las transiciones.
-        setupPokeballUi("MUSIC PLAYER")
+        setupMarcoUi("MUSIC PLAYER")
 
         // Referencias a las vistas del layout
         etBuscador = findViewById(R.id.etBuscador)
@@ -55,6 +59,18 @@ class MainActivity : MusicBaseActivity() {
 
         // Iniciamos el listener del EditText para el filtrado en tiempo real
         setupBuscador()
+
+        // --- NUEVO: Configuración para cerrar teclado al dar Enter ---
+        etBuscador.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH) {
+                // Quitamos el foco del buscador y cerramos el teclado
+                etBuscador.clearFocus()
+                ocultarTeclado(v)
+                true
+            } else {
+                false
+            }
+        }
     }
 
     // --- COMUNICACIÓN CON EL SERVICIO ---
@@ -71,7 +87,7 @@ class MainActivity : MusicBaseActivity() {
     // El Adapter usará esto para pintar de color cian el título de la canción activa.
     private fun actualizarEstadoAdapter() {
         if (musicaService != null) {
-            val nombre = musicaService?.getNombreCancion()?: "Sin valor"
+            val nombre = musicaService?.getNombreCancion()
             val sonando = musicaService?.isPlaying()?: false
             adapter.actualizarEstadoMusica(nombre, sonando)
         }
@@ -160,6 +176,7 @@ class MainActivity : MusicBaseActivity() {
             }
         })
     }
+
     // Ciclo de vida: Se llama al volver a la app (ej: tras minimizar o volver de Detalles).
     override fun onResume() {
         super.onResume()
@@ -169,5 +186,11 @@ class MainActivity : MusicBaseActivity() {
 
         // Sincronizamos el estado visual (play/pause) por si cambió en segundo plano
         actualizarEstadoAdapter()
+    }
+
+    // Helper para ocultar el teclado suavemente
+    private fun ocultarTeclado(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }

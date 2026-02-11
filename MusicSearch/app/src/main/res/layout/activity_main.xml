@@ -43,6 +43,7 @@
         android:elevation="10dp"
         android:drawableEnd="@android:drawable/ic_menu_search"
         android:drawableTint="#00FFFF"
+        android:imeOptions="actionDone"
         app:layout_constraintTop_toTopOf="@+id/guiaTop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

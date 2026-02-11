@@ -4,8 +4,11 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
+// AdminSQL: Clase encargada de gestionar la base de datos SQLite del proyecto.
+// Hereda de SQLiteOpenHelper para crear la tabla, insertar datos y actualizar versiones.
 class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", null, 3) {
 
+    // Se ejecuta la primera vez que se instala la App: Crea la estructura de la tabla 'canciones'.
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("""
             CREATE TABLE canciones (
@@ -21,14 +24,17 @@ class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", n
                 duracion TEXT
             )
         """)
+        // Una vez creada la tabla, metemos los datos por defecto.
         insertarDatosIniciales(db)
     }
 
+    // Se ejecuta si cambiamos la versión de la DB (ej: de 2 a 3): Borra la tabla vieja y crea la nueva.
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS canciones")
         onCreate(db)
     }
 
+    // Carga masiva de canciones para que la App no empiece vacía.
     private fun insertarDatosIniciales(db: SQLiteDatabase) {
         // Robe
         db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Nada que perder', 'Robe', 'robe_nada_que_perder', 'img_nada_que_perder', 'Rock Progresivo', 2023, '6:15', 4500)")
@@ -56,14 +62,16 @@ class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", n
         db.execSQL("INSERT INTO canciones (titulo, artista, recurso_raw, imagen_uri, genero, anio_lanzamiento, duracion, megusta) VALUES ('Faded', 'Alan Walker', 'aw_faded', 'img_faded', 'Electro House', 2015, '3:32', 23000)")
     }
 
+    // Actualiza el contador de visitas (+1) de una canción específica en la DB.
     fun sumarVisita(idCancion: Int) {
-        val db = this.writableDatabase
+        val db = this.writableDatabase // Abrimos modo escritura
         db.execSQL("UPDATE canciones SET visitas = visitas + 1 WHERE id = $idCancion")
         db.close()
     }
 
+    // Helper: Convierte la fila actual del Cursor (resultado SQL) en un objeto Cancion de Kotlin.
     private fun cursorToCancion(cursor: android.database.Cursor): Cancion {
-        // Aseguramos el orden correcto que coincide con data class Cancion
+        // Obtenemos los datos por el nombre de la columna para evitar errores de posición.
         val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
         val titulo = cursor.getString(cursor.getColumnIndexOrThrow("titulo"))
         val artista = cursor.getString(cursor.getColumnIndexOrThrow("artista"))
@@ -78,6 +86,7 @@ class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", n
         return Cancion(id, titulo, artista, raw, visitas, likes, img, genero, anio, duracion)
     }
 
+    // Devuelve todas las canciones de la tabla ordenadas alfabéticamente por título.
     fun obtenerTodasLasCanciones(): ArrayList<Cancion> {
         val lista = ArrayList<Cancion>()
         val db = this.readableDatabase
@@ -90,6 +99,7 @@ class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", n
         return lista
     }
 
+    // Consulta el Ranking de las 10 canciones con más visitas.
     fun obtenerTopCanciones(): ArrayList<Cancion> {
         val lista = ArrayList<Cancion>()
         val db = this.readableDatabase
@@ -102,6 +112,7 @@ class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", n
         return lista
     }
 
+    // Consulta el Ranking de las 10 canciones con más "Me gusta".
     fun obtenerTopLikes(): ArrayList<Cancion> {
         val lista = ArrayList<Cancion>()
         val db = this.readableDatabase
@@ -114,6 +125,7 @@ class AdminSQL(context: Context) : SQLiteOpenHelper(context, "musicsearch_db", n
         return lista
     }
 
+    // Busca una canción concreta por su ID (usado en la pantalla de Detalle).
     fun obtenerCancionPorId(id: Int): Cancion? {
         val db = this.readableDatabase
         val cursor = db.rawQuery("SELECT * FROM canciones WHERE id = ?", arrayOf(id.toString()))

@@ -17,7 +17,7 @@ class CatalogoActivity : MusicBaseActivity() { // Hereda de MusicBase para el me
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_catalogo)
 
-        try { setupPokeballUi("BIBLIOTECA") } catch (e: Exception) {}
+        try { setupMarcoUi("BIBLIOTECA") } catch (e: Exception) {}
 
         val db = AdminSQL(this)
         listaCompleta = db.obtenerTodasLasCanciones()
